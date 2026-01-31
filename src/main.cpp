@@ -2,10 +2,15 @@
 #include "fwwasm.h"
 #include <stdint.h>
 
+const int levelOne = 100;
+const int levelTwo = 200;
+const int levelThree = 300;
+
 int character;
 int level;
 int steps;
 int litLeds;
+bool up = 0;
 
 void createNewSave(){
     //ask user to pick a character
@@ -20,7 +25,29 @@ void eventLoop(){
     }
 
     if(last_event == FWGUI_EVENT_GUI_SENSOR_DATA){
-        //process sensor data
+        processAccelData(event_data, &up, &steps);
+    }
+
+    switch(level){
+        case 1:
+            if(steps >= levelOne){
+                level++;
+                steps = 0;
+            }
+            break;
+        case 2:
+            if(steps >= levelTwo){
+                level++;
+                steps = 0;
+            }
+            break;
+        case 3:
+            if(steps >= levelThree){
+                level++;
+                steps = 0;
+            }
+        default:
+            break;
     }
 }
 
