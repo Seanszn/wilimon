@@ -1,0 +1,5 @@
+/home/jay/projects/wilimon/build/CMakeFiles/edit_cache.dir
+/home/jay/projects/wilimon/build/CMakeFiles/rebuild_cache.dir
+/home/jay/projects/wilimon/build/src/CMakeFiles/wilimon.dir
+/home/jay/projects/wilimon/build/src/CMakeFiles/edit_cache.dir
+/home/jay/projects/wilimon/build/src/CMakeFiles/rebuild_cache.dir
