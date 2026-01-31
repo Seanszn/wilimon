@@ -1,4 +1,4 @@
-#include "fwwasm.h"
+#include "include/fwwasm.h"
 #include <stdint.h>
 
 int character;
