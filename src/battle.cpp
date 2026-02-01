@@ -8,6 +8,12 @@ const float lvTwo = 1.1;
 const float lvThree = 1.2;
 const float lvFour = 1.4;
 
+const int WHITE = 0;
+const int YELLOW = 1;
+const int GREEN = 2;
+const int BLUE = 3;
+const int RED = 5;
+
 void beginBattle(int* level, int* character, int* steps){
     int mult;
     int clicks = 0;
@@ -53,4 +59,10 @@ void displayVictory(int* character){
 
 void displayLoss(int* character){
 
+}
+
+void setAllLEDS(int red, int green, int blue) {
+    for (int i = 0; i < 7; i++) {
+        setBoardLED(i, red, green, blue, switchTime, ledsimplevalue);
+    }
 }
