@@ -1,5 +1,6 @@
 #include "stepcount.cpp"
 #include "battle.cpp"
+#include "start.cpp"
 #include "fwwasm.h"
 #include <stdint.h>
 
@@ -14,7 +15,16 @@ int litLeds;
 bool up = 0;
 
 void createNewSave(){
-    //ask user to pick a character
+    character = createCharacter();
+    level = 0;
+    steps = 0;
+    litLeds = 0;
+
+    unsigned char data[] = {(char)character,(char)level,(char)litLeds};
+    int handle = openFile("data.txt", 1);
+
+    writeFile(handle, data, 3);
+    closeFile(handle);
 }
 
 void eventLoop(){
