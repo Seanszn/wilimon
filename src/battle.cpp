@@ -1,15 +1,5 @@
 #include "fwwasm.h"
 
-#define WHITE 0x999999
-#define YELLOW 0x999900
-#define GREEN 0x009900
-#define BLUE 0x000099
-#define RED 0x990000
-
-#define GET_R(x) ((x >> 16) & 0xFF)
-#define GET_G(x) ((x >> 8) & 0xFF)
-#define GET_B(x) (x & 0xFF)
-
 const int battleTime = 30000;
 const int switchTime = 6000;
 
@@ -18,29 +8,11 @@ const float lvTwo = 1.1;
 const float lvThree = 1.2;
 const float lvFour = 1.4;
 
-void setAllLEDS(int color) {
-    for (int i = 0; i < 7; i++) {
-        setBoardLED(i, 
-            GET_R(color), 
-            GET_G(color), 
-            GET_B(color), 
-            switchTime, 
-            ledsimplevalue);
-    }
-}
-
-
-bool evaluateBattle(float value){
-
-}
-
-void displayVictory(int* character){
-
-}
-
-void displayLoss(int* character){
-
-}
+// const int WHITE = 0;
+// const int YELLOW = 1;
+// const int GREEN = 2;
+// const int BLUE = 3;
+// const int RED = 5;
 
 void beginBattle(int* level, int* character, int* steps){
     int mult;
@@ -64,39 +36,38 @@ void beginBattle(int* level, int* character, int* steps){
     }
 
     int startTime = millis();
-    int flashTime;
+    int flashTime = startTime;
 
     while(millis() - startTime < battleTime){
         int color = wilirand() + startTime % 5;
-
-        flashTime = millis();
+        
         switch(color){
             //WHITE
             case 0:
-                setAllLEDS(WHITE);
+                setAllLEDS(255, 255, 255);
                 break;
             //YELLOW
             case 1:
-                setAllLEDS(YELLOW);
+                setAllLEDS(255, 255, 0);
                 break;
             //GREEN
             case 2:
-                setAllLEDS(GREEN);
+                setAllLEDS(0, 255, 0);
                 break;
             //BLUE
             case 3:
-                setAllLEDS(BLUE);
+                setAllLEDS(0, 0, 255);
                 break;
             //RED
             case 4:
-                setAllLEDS(RED);
+                setAllLEDS(255, 0, 0);
                 break;
             default:
                 break;
         }
 
-        while(millis() - flashTime < switchTime){
-
+        while(millis() - flashTime){
+            
         }
     }
 
@@ -108,5 +79,23 @@ void beginBattle(int* level, int* character, int* steps){
         displayVictory(character);
     }else{
         displayLoss(character);
+    }
+}
+
+bool evaluateBattle(float value){
+
+}
+
+void displayVictory(int* character){
+
+}
+
+void displayLoss(int* character){
+
+}
+
+void setAllLEDS(int red, int green, int blue) {
+    for (int i = 0; i < 7; i++) {
+        setBoardLED(i, red, green, blue, switchTime, ledsimplevalue);
     }
 }

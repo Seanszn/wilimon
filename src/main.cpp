@@ -31,29 +31,31 @@ void pickCharacterDisplay(){
 }
 
 void pickCharacter(){
-    pickCharacterDisplay();
-
     while(1){
-        uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
+    // TODO: show start panel before this
+    pickCharacterDisplay();
+    uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
 
-        int last_event = -1;
-        if (hasEvent()) {
-            last_event = getEventData(event_data);
-        }
+    int last_event;
+    if (hasEvent()) {
+        last_event = getEventData(event_data);
+    }
 
-        switch (last_event) {
-            case FWGUI_EVENT_GRAY_BUTTON:
-                character = SEAGULL;
-                break;
-            case FWGUI_EVENT_GREEN_BUTTON:
-                character = FROG;
-                break;
-            // the orca is red because it wants to obliterate you
-            case FWGUI_EVENT_RED_BUTTON:
-                character = ORCA;
-                break;
-            default:
-                break;
+    switch (last_event) {
+        
+        case FWGUI_EVENT_GRAY_BUTTON:
+            character = SEAGULL;
+            break;
+        
+        case FWGUI_EVENT_GREEN_BUTTON:
+            character = FROG;
+            break;
+        // the orca is red because it wants to obliterate you
+        case FWGUI_EVENT_RED_BUTTON:
+            character = ORCA;
+            break;
+        default:
+            break;
         }
 
         if(character == ORCA || character == FROG || character == SEAGULL){
@@ -103,17 +105,24 @@ void eventLoop(){
 }
 
 void setupDisplay(){
+    addPanel(0, 1, 0, 0, 0, 0, 0, 0, 0);
 
+    
+}
+
+void updateDisplay(){
+    
 }
 
 int main(){
 
     pickCharacter();
     
+    setupDisplay();
 
     while(1){
         eventLoop();
-        setupDisplay();
+        updateDisplay();
     }
 
     return 0;
