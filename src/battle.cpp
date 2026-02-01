@@ -1,10 +1,8 @@
 #include "fwwasm.h"
 
-#define WHITE 0x999999
 #define YELLOW 0x999900
 #define GREEN 0x009900
 #define BLUE 0x000099
-#define RED 0x990000
 
 #define GET_R(x) ((x >> 16) & 0xFF)
 #define GET_G(x) ((x >> 8) & 0xFF)
@@ -90,23 +88,19 @@ void beginBattle(int* level, int* character, int* steps){
 
     while(millis() - startTime < BATTLE_TIME){
         flashTime = millis();
-        unsigned int color = (unsigned) wilirand() + startTime % 4;
-        
+        unsigned int color = (unsigned) wilirand() + startTime % 3;
+
         switch(color){
-            //WHITE
-            case 0:
-                setAllLEDS(WHITE);
-                break;
             //YELLOW
-            case 1:
+            case 0:
                 setAllLEDS(YELLOW);
                 break;
             //GREEN
-            case 2:
+            case 1:
                 setAllLEDS(GREEN);
                 break;
             //BLUE
-            case 3:
+            case 2:
                 setAllLEDS(BLUE);
                 break;
 
@@ -177,5 +171,5 @@ void offerBattle(int* level, int* character, int* steps){
         waitms(30);
     }
 
-    showPanel(0);
+    showPanel(1);
 }
