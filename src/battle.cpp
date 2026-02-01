@@ -10,13 +10,13 @@
 #define GET_G(x) ((x >> 8) & 0xFF)
 #define GET_B(x) (x & 0xFF)
 
-const int battleTime = 30000;
-const int switchTime = 6000;
+#define BATTLE_TIME 30000
+#define SWITCH_TIME 6000
 
-const float lvOne = 1;
-const float lvTwo = 1.1;
-const float lvThree = 1.2;
-const float lvFour = 1.4;
+#define LV_1MULT 1.0f
+#define LV_2MULT 1.1f
+#define LV_3MULT 1.2f
+#define LV_4MULT 1.4f
 
 void setAllLEDS(int color) {
     for (int i = 0; i < 7; i++) {
@@ -24,7 +24,7 @@ void setAllLEDS(int color) {
             GET_R(color), 
             GET_G(color), 
             GET_B(color), 
-            switchTime, 
+            SWITCH_TIME, 
             ledsimplevalue);
     }
 }
@@ -43,31 +43,32 @@ void displayLoss(int* character){
 }
 
 void beginBattle(int* level, int* character, int* steps){
-    int mult;
+    float mult;
     int clicks = 0;
 
     switch(*level){
         case 1:
-            mult = lvOne;
+            mult = LV_1MULT;
             break;
         case 2:
-            mult = lvTwo;
+            mult = LV_2MULT;
             break;
         case 3:
-            mult = lvThree;
+            mult = LV_3MULT;
             break;
         case 4:
-            mult = lvFour;
+            mult = LV_4MULT;
             break;
         default:
             break;
     }
 
-    int startTime = millis();
-    int flashTime = startTime;
+    unsigned int startTime = millis();
+    unsigned int flashTime;
 
-    while(millis() - startTime < battleTime){
-        int color = wilirand() + startTime % 5;
+    while(millis() - startTime < BATTLE_TIME){
+        flashTime = millis();
+        unsigned int color = (unsigned) wilirand() + startTime % 5;
         
         switch(color){
             //WHITE
@@ -94,12 +95,12 @@ void beginBattle(int* level, int* character, int* steps){
                 break;
         }
 
-        while(millis() - flashTime){
+        while(millis() - flashTime < SWITCH_TIME){
 
         }
     }
 
-    float points = clicks * mult;
+    float points = (float) clicks * mult;
     bool won = evaluateBattle(points);
 
     if(won){
