@@ -3,9 +3,14 @@
 #include "fwwasm.h"
 #include <stdint.h>
 
-const int levelOne = 100;
-const int levelTwo = 200;
-const int levelThree = 300;
+#define LV_1 100
+#define LV_2 200
+#define LV_3 300
+
+#define STEP_DIV 7
+
+#define DATA_FILE "data.txt"
+#define BUFFER_SIZE 256
 
 int character;
 int level;
@@ -36,19 +41,19 @@ void eventLoop(){
 
     switch(level){
         case 1:
-            if(steps >= levelOne){
+            if(steps >= LV_1){
                 level++;
                 steps = 0;
             }
             break;
         case 2:
-            if(steps >= levelTwo){
+            if(steps >= LV_2){
                 level++;
                 steps = 0;
             }
             break;
         case 3:
-            if(steps >= levelThree){
+            if(steps >= LV_3){
                 level++;
                 steps = 0;
             }
@@ -57,13 +62,13 @@ void eventLoop(){
     }
 }
 
-WASM_EXPORT int main(){
-    bool saved = fileExists("data.txt");
+int main(){
+    bool saved = fileExists(DATA_FILE);
     if(!saved){
         createNewSave();
     }else{
-        static char buff[256];
-        int handle = openFile("data.txt", 0);
+        static char buff[BUFFER_SIZE];
+        int handle = openFile(DATA_FILE, 0);
 
         int bytesRead = readFile(handle, (unsigned char*)buff, (int*)sizeof(buff) - 1);
         buff[bytesRead] = '\0';
@@ -74,13 +79,13 @@ WASM_EXPORT int main(){
 
         switch(level){
             case 1:
-                steps = (int)((100 / 7) * litLeds);
+                steps = (int)((LV_1 / STEP_DIV) * litLeds);
                 break;
             case 2:
-                steps = (int)((200 / 7) * litLeds);
+                steps = (int)((LV_2 / STEP_DIV) * litLeds);
                 break;
             case 3:
-                steps = (int)((300 / 7) * litLeds);
+                steps = (int)((LV_3 / STEP_DIV) * litLeds);
                 break;
             default:
                 break;
