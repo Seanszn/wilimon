@@ -1,6 +1,7 @@
 #include "stepcount.cpp"
 #include "battle.cpp"
 #include "fwwasm.h"
+#include <cstdlib>
 #include <stdint.h>
 
 #define LV_1 100
@@ -35,8 +36,6 @@ void makePickCharacterDisplay(){
 void pickCharacter(){
     makePickCharacterDisplay();
 
-    while(1){
-    // TODO: show start panel before this
     uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
 
     int last_event = NO_EVENT;
@@ -59,13 +58,15 @@ void pickCharacter(){
                 character = FROG;
                 break;
             // the orca is red because it wants to obliterate you
-            case FWGUI_EVENT_RED_BUTTON:
+            case FWGUI_EVENT_BLUE_BUTTON:
                 character = ORCA;
                 break;
+            
+            case FWGUI_EVENT_RED_BUTTON:
+                exitToMainAppMenu();
 
             case FWGUI_EVENT_YELLOW_BUTTON:
-            case FWGUI_EVENT_BLUE_BUTTON:
-                // do nothing for these, just loop back and wait for a valid event
+                // do nothing for this, just loop back and wait for a valid event
                 continue;
 
             default:
@@ -74,6 +75,10 @@ void pickCharacter(){
         }
         break;
     }
+}
+
+void updateDisplay(){
+    setControlValue(1, 1, level);
 }
 
 void eventLoop() {
@@ -87,20 +92,20 @@ void eventLoop() {
             waitms(100);
         }
 
-    int rxCount = RadioGetRxCount(1);
-    if(rxCount > 0){
-        offerBattle(&level, &character, &steps);
-    }
+        int rxCount = RadioGetRxCount(1);
+
+        if(rxCount > 0){
+            offerBattle(&level, &character, &steps);
+        }
+
+        // if (last_event == FWGUI_EVENT_RED_BUTTON) {
+        //     exitToMainAppMenu();
+        // }
+
         if(last_event == FWGUI_EVENT_GUI_SENSOR_DATA){
             processAccelData(event_data, &up, &steps);
         } else {
             continue;
-        }
-        
-
-        int rxCount = RadioGetRxCount(1);
-        if(rxCount > 0){
-            beginBattle(&level, &character, &steps);
         }
 
         switch(level){
@@ -124,11 +129,12 @@ void eventLoop() {
             default:
                 break;
         }
+        updateDisplay();
     }
     waitms(30);
 }
 
-const char* getCharacterName(){
+const char* getCharacterName() {
     switch(character){
         case FROG: return "frog";
         case ORCA: return "whale";
@@ -149,20 +155,13 @@ void setupDisplay(){
     showPanel(1);
 }
 
-void updateDisplay(){
-    setControlValue(1, 1, level);
-}
-
 int main() {
     // prompt user to pick character
     pickCharacter();
     
     setupDisplay();
 
-    while(1){
-        eventLoop();
-        updateDisplay();
-    }
+    eventLoop();
 
     return 0;
 }
