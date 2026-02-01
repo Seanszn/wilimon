@@ -37,9 +37,9 @@ void beginBattle(int* level, int* character, int* steps){
 
     if(won){
         *steps += 50;
-        displayVictory();
+        displayVictory(character);
     }else{
-        displayLoss();
+        displayLoss(character);
     }
 }
 
@@ -47,10 +47,10 @@ bool evaluateBattle(float value){
 
 }
 
-void displayVictory(){
+void displayVictory(int* character){
 
 }
 
-void displayLoss(){
-    
+void displayLoss(int* character){
+
 }
