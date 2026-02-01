@@ -29,17 +29,54 @@ void setAllLEDS(int color) {
     }
 }
 
+void offerBattle(int* level, int* character, int* steps){
+    unsigned char rxBuf[32];
+    RadioRead(1, rxBuf, 32);
 
-bool evaluateBattle(float value){
+    unsigned char challengeByte = 0x01;
+    RadioWrite(1, &challengeByte, 1);
 
-}
+    addPanel(1, 1, 0, 0, 0, 0, 0, 0, 0);
+    addControlText(1, 0, 20, 80, 0, 16, 255, 255, 255, "another wilimon is in the area");
+    addControlText(1, 1, 110, 130, 0, 16, 255, 255, 255, "challenge?");
+    showPanel(1);
 
-void displayVictory(int* character){
+    bool accepted = false;
+    bool otherAccepted = false;
+    unsigned int startTime = millis();
 
-}
+    while(millis() - startTime < 15000){
+        int event_data[FW_GET_EVENT_DATA_MAX] = {0};
 
-void displayLoss(int* character){
+        int last_event = -1;
+        if(hasEvent()){
+            last_event = getEventData((unsigned char*)event_data);
+        }
 
+        if(last_event == FWGUI_EVENT_GRAY_BUTTON && !accepted){
+            accepted = true;
+            unsigned char acceptByte = 0x02;
+            RadioWrite(1, &acceptByte, 1);
+        }
+
+        if(RadioGetRxCount(1) > 0){
+            unsigned char rxData[32];
+            int bytesRead = RadioRead(1, rxData, 32);
+            if(bytesRead > 0 && rxData[0] == 0x02){
+                otherAccepted = true;
+            }
+        }
+
+        if(accepted && otherAccepted){
+            beginBattle(level, character, steps);
+            showPanel(0);
+            return;
+        }
+
+        waitms(30);
+    }
+
+    showPanel(0);
 }
 
 void beginBattle(int* level, int* character, int* steps){
@@ -73,23 +110,23 @@ void beginBattle(int* level, int* character, int* steps){
         switch(color){
             //WHITE
             case 0:
-                setAllLEDS(WHITE);
+                setAllLEDS(255, 255, 255);
                 break;
             //YELLOW
             case 1:
-                setAllLEDS(YELLOW);
+                setAllLEDS(255, 255, 0);
                 break;
             //GREEN
             case 2:
-                setAllLEDS(GREEN);
+                setAllLEDS(0, 255, 0);
                 break;
             //BLUE
             case 3:
-                setAllLEDS(BLUE);
+                setAllLEDS(0, 0, 255);
                 break;
             //RED
             case 4:
-                setAllLEDS(RED);
+                setAllLEDS(255, 0, 0);
                 break;
             default:
                 break;
@@ -108,5 +145,45 @@ void beginBattle(int* level, int* character, int* steps){
         displayVictory(character);
     }else{
         displayLoss(character);
+    }
+}
+
+bool evaluateBattle(float value){
+    //while(1){
+    int val = (int)value;
+    int recValue;
+
+    unsigned char buffer[4];
+    buffer[0] = (val >> 0) & 0xFF;
+    buffer[1] = (val >> 8) & 0xFF;
+    buffer[2] = (val >> 16) & 0xFF;
+    buffer[3] = (val >> 24) & 0xFF;
+    RadioWrite(1, buffer, 4);
+
+    if(RadioGetRxCount(1) >= 4){
+        unsigned char recBuffer[4];
+        RadioRead(1, recBuffer, 4);
+        recValue = (recBuffer[0]) | (recBuffer[1] << 8) | (recBuffer[2] << 16) | (recBuffer[3] << 24);
+    }
+
+    if(val > recValue){
+        return true;
+    }else{
+        return false;
+    }
+    //}
+}
+
+void displayVictory(int* character){
+    unsigned int startTime = millis();
+}
+
+void displayLoss(int* character){
+
+}
+
+void setAllLEDS(int red, int green, int blue) {
+    for (int i = 0; i < 7; i++) {
+        setBoardLED(i, red, green, blue, switchTime, ledsimplevalue);
     }
 }
