@@ -1,4 +1,5 @@
 #include "stepcount.cpp"
+#include "battle.cpp"
 #include "fwwasm.h"
 #include <stdint.h>
 
@@ -26,6 +27,11 @@ void eventLoop(){
 
     if(last_event == FWGUI_EVENT_GUI_SENSOR_DATA){
         processAccelData(event_data, &up, &steps);
+    }
+
+    int rxCount = RadioGetRxCount(1);
+    if(rxCount > 0){
+        beginBattle(&level, &character, &steps);
     }
 
     switch(level){
