@@ -25,10 +25,10 @@ bool up = 0;
 void makePickCharacterDisplay(){
     addPanel(1, 1, 0, 0, 0, 0, 0, 0, 0);
 
-    addControlText(0, 0, 60, 10, 0, 16, 255, 255, 255, "pick a character");
-    addControlText(0, 1, 10, 200, 0, 16, 255, 255, 255, "frog");
-    addControlText(0, 2, 95, 200, 0, 16, 255, 255, 255, "whale");
-    addControlText(0, 3, 190, 200, 0, 16, 255, 255, 255, "bird");
+    addControlText(0, 0, 60, 10, 0, FONT_SIZE, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "pick a character");
+    addControlText(0, 1, 10, 200, 0, FONT_SIZE, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "frog");
+    addControlText(0, 2, 95, 200, 0, FONT_SIZE, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "whale");
+    addControlText(0, 3, 190, 200, 0, FONT_SIZE, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "bird");
 
     showPanel(1);
 }
@@ -89,13 +89,12 @@ void eventLoop() {
     while (1) {
         //wait for event
         while (!hasEvent()) {
+            int rxCount = RadioGetRxCount(1);
+
+            if(rxCount > 0){
+                offerBattle(&level, &character, &steps);
+            }
             waitms(100);
-        }
-
-        int rxCount = RadioGetRxCount(1);
-
-        if(rxCount > 0){
-            offerBattle(&level, &character, &steps);
         }
 
         // if (last_event == FWGUI_EVENT_RED_BUTTON) {
@@ -146,11 +145,11 @@ const char* getCharacterName() {
 void setupDisplay(){
     addPanel(1, 1, 0, 0, 0, 0, 0, 0, 0);
 
-    addControlText(0, 0, 10, 10, 0, 16, 255, 255, 255, "level: ");
-    addControlNumber(0, 1, 1, 70, 10, 30, 16, 0, 255, 255, 255, 0, 0, 0, 0);
+    addControlText(0, 0, 10, 10, 0, 16, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "level: ");
+    addControlNumber(0, 1, 1, 70, 10, 30, 16, 0, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), 0, 0, 0, 0);
     setControlValue(0, 1, level);
 
-    addControlText(0, 2, 130, 110, 0, 16, 255, 255, 255, getCharacterName());
+    addControlText(0, 2, 130, 110, 0, 16, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), getCharacterName());
 
     showPanel(1);
 }

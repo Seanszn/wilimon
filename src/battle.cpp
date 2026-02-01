@@ -20,6 +20,8 @@
 
 #define NO_EVENT -1
 
+#define FONT_SIZE 16
+
 void setAllLEDS(int color) {
     for (int i = 0; i < 7; i++) {
         setBoardLED(i, 
@@ -34,7 +36,7 @@ void setAllLEDS(int color) {
 bool evaluateBattle(float value){
     //while(1){
     int val = (int)value;
-    int recValue;
+    int recValue = NO_EVENT;
 
     unsigned char buffer[4];
     buffer[0] = (val >> 0) & 0xFF;
@@ -43,11 +45,14 @@ bool evaluateBattle(float value){
     buffer[3] = (val >> 24) & 0xFF;
     RadioWrite(1, buffer, 4);
 
-    if(RadioGetRxCount(1) >= 4){
-        unsigned char recBuffer[4];
-        RadioRead(1, recBuffer, 4);
-        recValue = (recBuffer[0]) | (recBuffer[1] << 8) | (recBuffer[2] << 16) | (recBuffer[3] << 24);
+    //wait for buffer
+    while (RadioGetRxCount(1) < 4) {
+        waitms(100);
     }
+
+    unsigned char recBuffer[4];
+    RadioRead(1, recBuffer, 4);
+    recValue = (recBuffer[0]) | (recBuffer[1] << 8) | (recBuffer[2] << 16) | (recBuffer[3] << 24);
 
     if(val > recValue){
         return true;
@@ -138,8 +143,8 @@ void offerBattle(int* level, int* character, int* steps){
     RadioWrite(1, &challengeByte, 1);
 
     addPanel(1, 1, 0, 0, 0, 0, 0, 0, 0);
-    addControlText(1, 0, 20, 80, 0, 16, 255, 255, 255, "another wilimon is in the area");
-    addControlText(1, 1, 110, 130, 0, 16, 255, 255, 255, "challenge?");
+    addControlText(1, 0, 20, 80, 0, FONT_SIZE, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "another wilimon is in the area");
+    addControlText(1, 1, 110, 130, 0, FONT_SIZE, GET_R(WHITE), GET_G(WHITE), GET_B(WHITE), "challenge?");
     showPanel(1);
 
     bool accepted = false;
