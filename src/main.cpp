@@ -9,8 +9,9 @@
 
 #define STEP_DIV 7
 
-#define DATA_FILE "data.txt"
-#define BUFFER_SIZE 256
+#define FROG 0
+#define ORCA 1
+#define SEAGULL 2
 
 int character;
 int level;
@@ -18,8 +19,30 @@ int steps;
 int litLeds;
 bool up = 0;
 
-void createNewSave(){
-    //ask user to pick a character
+void pickCharacter(){
+
+    // TODO: show start panel before this 
+    uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
+
+    int last_event;
+    if (hasEvent()) {
+        last_event = getEventData(event_data);
+    }
+
+    switch (last_event) {
+        
+        case FWGUI_EVENT_GRAY_BUTTON:
+            character = SEAGULL;
+            break;
+        
+        case FWGUI_EVENT_GREEN_BUTTON:
+            character = FROG;
+            break;
+        // the orca is red because it wants to obliterate you
+        case FWGUI_EVENT_RED_BUTTON:
+            character = ORCA;
+            break;
+    }
 }
 
 void eventLoop(){
@@ -63,35 +86,9 @@ void eventLoop(){
 }
 
 int main(){
-    bool saved = fileExists(DATA_FILE);
-    if(!saved){
-        createNewSave();
-    }else{
-        static char buff[BUFFER_SIZE];
-        int handle = openFile(DATA_FILE, 0);
 
-        int bytesRead = readFile(handle, (unsigned char*)buff, (int*)sizeof(buff) - 1);
-        buff[bytesRead] = '\0';
-
-        character = (int)buff[0] - (int)'0';
-        level = (int)buff[1] - (int)'0';
-        litLeds = (int)buff[2] - (int)'0';
-
-        switch(level){
-            case 1:
-                steps = (int)((LV_1 / STEP_DIV) * litLeds);
-                break;
-            case 2:
-                steps = (int)((LV_2 / STEP_DIV) * litLeds);
-                break;
-            case 3:
-                steps = (int)((LV_3 / STEP_DIV) * litLeds);
-                break;
-            default:
-                break;
-        }
-    }
-
+    pickCharacter();
+    
     while(1){
         eventLoop();
     }
