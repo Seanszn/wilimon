@@ -20,7 +20,7 @@ add_library(${CMAKE_PROJECT_NAME} INTERFACE)
 # FetchContent_MakeAvailable(fwwasm)
 
 # Compiler and linker option variables
-set(NORMAL_COMPILER_ARGS -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wfloat-equal -Wold-style-cast)
+set(NORMAL_COMPILER_ARGS -Wall -Werror -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wfloat-equal)
 set(WASM_COMPILER_ARGS --target=wasm32-unknown-wasi -O3 -flto)
 set(WASM_LINKER_ARGS
     "-Wl,--no-entry" # Specify we don't need main exported
