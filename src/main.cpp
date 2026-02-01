@@ -13,85 +13,108 @@
 #define ORCA 1
 #define SEAGULL 2
 
+#define NO_EVENT -1
+
 int character;
 int level;
 int steps;
 int litLeds;
 bool up = 0;
 
-void pickCharacter(){
+void pickCharacter() {
 
     // TODO: show start panel before this 
     uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
 
-    int last_event;
-    if (hasEvent()) {
-        last_event = getEventData(event_data);
-    }
+    int last_event = NO_EVENT;
 
-    switch (last_event) {
-        
-        case FWGUI_EVENT_GRAY_BUTTON:
-            character = SEAGULL;
-            break;
-        
-        case FWGUI_EVENT_GREEN_BUTTON:
-            character = FROG;
-            break;
-        // the orca is red because it wants to obliterate you
-        case FWGUI_EVENT_RED_BUTTON:
-            character = ORCA;
-            break;
+    while (true) {
+        //wait for an event to happen
+        while(!hasEvent()) {
+            waitms(100);
+        }
+
+        last_event = getEventData(event_data);
+
+        switch (last_event) {
+            // choose seagull
+            case FWGUI_EVENT_GRAY_BUTTON:
+                character = SEAGULL;
+                break;
+            // choose frog
+            case FWGUI_EVENT_GREEN_BUTTON:
+                character = FROG;
+                break;
+            // the orca is red because it wants to obliterate you
+            case FWGUI_EVENT_RED_BUTTON:
+                character = ORCA;
+                break;
+
+            case FWGUI_EVENT_YELLOW_BUTTON:
+            case FWGUI_EVENT_BLUE_BUTTON:
+                // do nothing for these, just loop back and wait for a valid event
+                continue;
+
+            default:
+                // handle whatever else could possibly go wrong and wait for a valid event
+                continue;
+        }
+        break;
     }
 }
 
-void eventLoop(){
+void eventLoop() {
     uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
     
-    int last_event;
-    if(hasEvent()){
-        last_event = getEventData(event_data);
-    }
+    int last_event = NO_EVENT;
 
-    if(last_event == FWGUI_EVENT_GUI_SENSOR_DATA){
-        processAccelData(event_data, &up, &steps);
-    }
+    while (1) {
+        //wait for event
+        while (!hasEvent()) {
+            waitms(100);
+        }
 
-    int rxCount = RadioGetRxCount(1);
-    if(rxCount > 0){
-        beginBattle(&level, &character, &steps);
-    }
+        if(last_event == FWGUI_EVENT_GUI_SENSOR_DATA){
+            processAccelData(event_data, &up, &steps);
+        } else {
+            continue;
+        }
+        
 
-    switch(level){
-        case 1:
-            if(steps >= LV_1){
-                level++;
-                steps = 0;
-            }
-            break;
-        case 2:
-            if(steps >= LV_2){
-                level++;
-                steps = 0;
-            }
-            break;
-        case 3:
-            if(steps >= LV_3){
-                level++;
-                steps = 0;
-            }
-        default:
-            break;
+        int rxCount = RadioGetRxCount(1);
+        if(rxCount > 0){
+            beginBattle(&level, &character, &steps);
+        }
+
+        switch(level){
+            case 1:
+                if(steps >= LV_1){
+                    level++;
+                    steps = 0;
+                }
+                break;
+            case 2:
+                if(steps >= LV_2){
+                    level++;
+                    steps = 0;
+                }
+                break;
+            case 3:
+                if(steps >= LV_3){
+                    level++;
+                    steps = 0;
+                }
+            default:
+                break;
+        }
     }
 }
 
-int main(){
-
+int main() {
+    // prompt user to pick character
     pickCharacter();
-    
-    while(1){
-        eventLoop();
-    }
+    // run the main program loop
+    eventLoop();
 
     return 0;
 }
