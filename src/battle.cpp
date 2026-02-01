@@ -64,11 +64,12 @@ void beginBattle(int* level, int* character, int* steps){
     }
 
     int startTime = millis();
-    int flashTime = startTime;
+    int flashTime;
 
     while(millis() - startTime < battleTime){
         int color = wilirand() + startTime % 5;
-        
+
+        flashTime = millis();
         switch(color){
             //WHITE
             case 0:
@@ -94,7 +95,7 @@ void beginBattle(int* level, int* character, int* steps){
                 break;
         }
 
-        while(millis() - flashTime){
+        while(millis() - flashTime < switchTime){
 
         }
     }

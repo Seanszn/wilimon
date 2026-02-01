@@ -13,35 +13,52 @@
 #define ORCA 1
 #define SEAGULL 2
 
-int character;
+int character = -1;
 int level;
 int steps;
 int litLeds;
 bool up = 0;
 
+void pickCharacterDisplay(){
+    addPanel(0, 1, 0, 0, 0, 0, 0, 0, 0);
+
+    addControlText(0, 0, 60, 10, 0, 16, 255, 255, 255, "pick a character");
+    addControlText(0, 1, 10, 200, 0, 16, 255, 255, 255, "frog");
+    addControlText(0, 2, 95, 200, 0, 16, 255, 255, 255, "whale");
+    addControlText(0, 3, 190, 200, 0, 16, 255, 255, 255, "bird");
+
+    showPanel(0);
+}
+
 void pickCharacter(){
+    pickCharacterDisplay();
 
-    // TODO: show start panel before this 
-    uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
+    while(1){
+        uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
 
-    int last_event;
-    if (hasEvent()) {
-        last_event = getEventData(event_data);
-    }
+        int last_event = -1;
+        if (hasEvent()) {
+            last_event = getEventData(event_data);
+        }
 
-    switch (last_event) {
-        
-        case FWGUI_EVENT_GRAY_BUTTON:
-            character = SEAGULL;
+        switch (last_event) {
+            case FWGUI_EVENT_GRAY_BUTTON:
+                character = SEAGULL;
+                break;
+            case FWGUI_EVENT_GREEN_BUTTON:
+                character = FROG;
+                break;
+            // the orca is red because it wants to obliterate you
+            case FWGUI_EVENT_RED_BUTTON:
+                character = ORCA;
+                break;
+            default:
+                break;
+        }
+
+        if(character == ORCA || character == FROG || character == SEAGULL){
             break;
-        
-        case FWGUI_EVENT_GREEN_BUTTON:
-            character = FROG;
-            break;
-        // the orca is red because it wants to obliterate you
-        case FWGUI_EVENT_RED_BUTTON:
-            character = ORCA;
-            break;
+        }
     }
 }
 
@@ -85,12 +102,18 @@ void eventLoop(){
     }
 }
 
+void setupDisplay(){
+
+}
+
 int main(){
 
     pickCharacter();
     
+
     while(1){
         eventLoop();
+        setupDisplay();
     }
 
     return 0;
