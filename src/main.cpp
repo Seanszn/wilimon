@@ -19,21 +19,22 @@ int steps;
 int litLeds;
 bool up = 0;
 
-void pickCharacterDisplay(){
-    addPanel(0, 1, 0, 0, 0, 0, 0, 0, 0);
+void makePickCharacterDisplay(){
+    addPanel(1, 1, 0, 0, 0, 0, 0, 0, 0);
 
     addControlText(0, 0, 60, 10, 0, 16, 255, 255, 255, "pick a character");
     addControlText(0, 1, 10, 200, 0, 16, 255, 255, 255, "frog");
     addControlText(0, 2, 95, 200, 0, 16, 255, 255, 255, "whale");
     addControlText(0, 3, 190, 200, 0, 16, 255, 255, 255, "bird");
 
-    showPanel(0);
+    showPanel(1);
 }
 
 void pickCharacter(){
+    makePickCharacterDisplay();
+
     while(1){
     // TODO: show start panel before this
-    pickCharacterDisplay();
     uint8_t event_data[FW_GET_EVENT_DATA_MAX] = {0};
 
     int last_event;
@@ -78,7 +79,7 @@ void eventLoop(){
 
     int rxCount = RadioGetRxCount(1);
     if(rxCount > 0){
-        beginBattle(&level, &character, &steps);
+        offerBattle(&level, &character, &steps);
     }
 
     switch(level){
@@ -102,16 +103,32 @@ void eventLoop(){
         default:
             break;
     }
+    waitms(30);
+}
+
+const char* getCharacterName(){
+    switch(character){
+        case FROG: return "frog";
+        case ORCA: return "whale";
+        case SEAGULL: return "bird";
+        default: return "";
+    }
 }
 
 void setupDisplay(){
-    addPanel(0, 1, 0, 0, 0, 0, 0, 0, 0);
+    addPanel(1, 1, 0, 0, 0, 0, 0, 0, 0);
 
-    
+    addControlText(0, 0, 10, 10, 0, 16, 255, 255, 255, "level: ");
+    addControlNumber(0, 1, 1, 70, 10, 30, 16, 0, 255, 255, 255, 0, 0, 0, 0);
+    setControlValue(0, 1, level);
+
+    addControlText(0, 2, 130, 110, 0, 16, 255, 255, 255, getCharacterName());
+
+    showPanel(1);
 }
 
 void updateDisplay(){
-    
+    setControlValue(1, 1, level);
 }
 
 int main(){
